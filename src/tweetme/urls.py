@@ -19,9 +19,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import url,include
 from .views import home_view
+from tweets.views import TweetListView
 
 urlpatterns = [
+    url(r'^$', TweetListView.as_view() , name="home"),
     url(r'^tweet/',include('tweets.urls'),name ="tweets"),
+    url(r'^api/tweet/' , include('tweets.api.urls') , name="api-tweets"),
     url(r'^admin/', admin.site.urls),
 ]
 

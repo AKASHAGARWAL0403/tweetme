@@ -5,6 +5,7 @@ from .models import Tweet
 from .forms import TweetForm
 from .mixins import UserLoginCheckMixin , TweetUpdateCheckMixin
 from django.db.models import Q
+from django.urls import reverse
 
 # Create your views here.
 
@@ -57,5 +58,6 @@ class TweetListView(ListView):
 
     def get_context_data(self , *args , **kwargs):
         context = super().get_context_data(*args,**kwargs)
-        print(context)
+        context['create_form'] = TweetForm()
+        context['create_url'] = reverse("tweets:create_view")
         return context
