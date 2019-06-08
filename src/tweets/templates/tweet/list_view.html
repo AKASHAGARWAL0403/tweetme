@@ -42,10 +42,12 @@
 
         function attachTweet(value , prepend)
         {
+            var is_retweet = value.is_retweet;
+            var tweetId = value.id;
             var tweetContent = value.content;
             var tweetUser = value.user.username;
             var dateDisplay = value.date_display;
-            var attachHTMLContent  = "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "<br/> via " + "<a href='"+ value.user.url + "'>"  + tweetUser + " </a> | "  + dateDisplay + " | " + "<a href='#'>View</a>"  + "</div></div><hr/>"
+            var attachHTMLContent  = "<div class=\"media\">" + is_retweet + "<div class=\"media-body\">" + tweetContent + "<br/> via " + "<a href='"+ value.user.url + "'>"  + tweetUser + " </a> | "  + dateDisplay + " | " + "<a href='/tweet/"+ tweetId + "'>View</a>"  + "</div></div><hr/>"
             if(prepend == true)
             {
                 $('#tweet-container').prepend(attachHTMLContent)

@@ -7,12 +7,14 @@ class TweetModalSerializers(serializers.ModelSerializer):
     user = UserModalSerializers(read_only = True)
     timesince = serializers.SerializerMethodField()
     date_display = serializers.SerializerMethodField()
-
+    is_retweet = serializers.SerializerMethodField()
     class Meta:
         model = Tweet
         fields = [
-            'user' , 
+            'user' ,
+            'id', 
             'content',
+            'is_retweet',
             'timestamp',
             'date_display',
             'timesince'
@@ -23,3 +25,8 @@ class TweetModalSerializers(serializers.ModelSerializer):
 
     def get_timesince(self,obj):
         return timesince(obj.timestamp) + " ago"
+
+    def get_is_retweet(self,obj):
+        if obj.parent:
+            return True
+        return False
