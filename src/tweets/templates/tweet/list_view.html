@@ -30,6 +30,22 @@
         tweets = [];
         query = getParameterByName('q');
 
+        function attachTweet(value , prepend)
+        {
+            var tweetContent = value.content;
+            var tweetUser = value.user.username;
+            var dateDisplay = value.date_display;
+            var attachHTMLContent  = "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "<br/> via " + tweetUser + " | "  + dateDisplay + " | " + "<a href='#'>View</a>"  + "</div></div><hr/>"
+            if(prepend == true)
+            {
+                $('#tweet-container').prepend(attachHTMLContent)
+            }
+            else
+            {
+                $("#tweet-container").append(attachHTMLContent)
+            }
+        }
+
         function appendTweet()
         {
             if(tweets == 0)
@@ -40,12 +56,7 @@
             {
                 $.each(tweets , function(key,value){
                     var tweetKey = key;
-                    var tweetContent = value.content;
-                    var tweetUser = value.user.username;
-                    var dateDisplay = value.date_display;
-                    $("#tweet-container").append(
-                        "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "<br/> via " + tweetUser + " | "  + dateDisplay + " | " + "<a href='#'>View</a>"  + "</div></div><hr/>"
-                    )
+                    attachTweet(value);
                 })
             }
         }
@@ -83,8 +94,8 @@
                 data : formData , 
                 success : function(data){
                     console.log(data)
-                    loadTweet()
-
+                    attachTweet(data , true)
+                    this_.find("input[type=text] , textarea").val("")
                 },
                 error : function(data){
                     console.log("error")
