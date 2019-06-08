@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 # Create your models here.
 
 class UserProfileManager(models.Manager):
@@ -40,6 +41,11 @@ class UserModel(models.Model):
         return str(self.following.all().count())
 
     def get_following(self):
-        users = self.following.all();
+        users = self.following.all()
         return users.exclude(username = self.user.username)
 
+    def get_follow_url(self):
+        return reverse("profile:follow" , kwargs={"username" : self.user.username})
+
+    def get_absolute_url(self):
+        return reverse("profile:user_profile" , kwargs={"username" : self.user.username})
