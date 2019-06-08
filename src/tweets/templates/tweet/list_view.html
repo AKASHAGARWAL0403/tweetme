@@ -80,28 +80,61 @@
                 } 
             })
         }
-
         loadTweet();
+
+        var countAllowed = 140;
+        var currCount = 0;
+
+        $('#tweet-form').append("<span id=\"tweetCharsLeft\">" + countAllowed + "<span/>")
+
+        $('#tweet-form textarea').keydown(function(event){
+            var tweetVal = $(this).val()
+            currCount = countAllowed - tweetVal.length
+            var spanChar = $('#tweetCharsLeft')
+            spanChar.text(currCount)
+            if(currCount > 0)
+            {
+                spanChar.removeClass("greyColor")
+                spanChar.removeClass("redColor")
+            }
+            else if(currCount == 0)
+            {
+                spanChar.removeClass("redColor")
+                spanChar.addClass("greyColor")
+            }
+            else if(currCount < 0)
+            {
+                spanChar.removeClass("greyColor")
+                spanChar.addClass("redColor")
+            }
+        })
 
         $("#tweet-form").submit(function(e){
             e.preventDefault()
             var this_ = $(this);
             var formData = this_.serialize()
             console.log(formData)
-            $.ajax({
-                url : '/api/tweet/create/',
-                method:'POST',
-                data : formData , 
-                success : function(data){
-                    console.log(data)
-                    attachTweet(data , true)
-                    this_.find("input[type=text] , textarea").val("")
-                },
-                error : function(data){
-                    console.log("error")
-                    console.log(data)
-                } 
-            })
+            if(currCount > 0)
+            {
+                $.ajax({
+                    url : '/api/tweet/create/',
+                    method:'POST',
+                    data : formData , 
+                    success : function(data){
+                        console.log(data)
+                        attachTweet(data , true)
+                        this_.find("input[type=text] , textarea").val("")
+                    },
+                    error : function(data){
+                        console.log("error")
+                        console.log(data)
+                    } 
+                })
+            }
+            else
+            {
+                console.log("Character count can't be more than 140")
+            }
         })
 
     })
