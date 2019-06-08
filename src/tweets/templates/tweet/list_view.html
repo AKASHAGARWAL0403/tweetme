@@ -31,6 +31,15 @@
         var query = getParameterByName('q');
         var nextPageUrl;
 
+        function updateHashLinks(){
+            $(".media-body").each(function(data){
+                var hashtagRegex = /(^|\s)#([\w\d-]+)/g
+                var newText = $(this).html().replace(hashtagRegex, "$1<a href='/tags/$2/'>#$2</a>")
+                $(this).html(newText)
+                
+            })
+        }
+
         function attachTweet(value , prepend)
         {
             var tweetContent = value.content;
@@ -81,6 +90,7 @@
                     tweets = data.results
                     console.log(data)
                     appendTweet()
+                    updateHashLinks()
                     if(data.next)
                         nextPageUrl = data.next
                     else
@@ -138,6 +148,7 @@
                     success : function(data){
                         console.log(data)
                         attachTweet(data , true)
+                        updateHashLinks()
                         this_.find("input[type=text] , textarea").val("")
                     },
                     error : function(data){
