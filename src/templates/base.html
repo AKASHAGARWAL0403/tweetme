@@ -40,5 +40,35 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
       <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
       {% block script %} {% endblock script %}
+
+      <script>
+          $(document).ready(function(){
+                var typingTimer;
+                var timoutTime = 500;
+                var searchQuery;
+                var searchParam = $('#navbar-search-id input[type=text]')
+
+                searchParam.keyup(function(event){
+
+                    searchQuery = $(this).val()
+                    console.log(searchQuery)
+                    clearTimeout(typingTimer)
+                    typingTimer = setTimeout(do_execute , timoutTime)
+                })
+
+                searchParam.keydown(function(event){
+                    clearTimeout(typingTimer)
+                })
+                
+                function do_execute()
+                {
+                    if(searchQuery)
+                    {
+                        var url = 'tweet/search/?q='+searchQuery
+                        document.location.href = url;
+                    }
+                }
+          })
+      </script>
   </body>
 </html>

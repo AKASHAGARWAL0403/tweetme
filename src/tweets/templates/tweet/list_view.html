@@ -27,8 +27,9 @@
     $(document).ready(function(){
         console.log("working");
 
-        tweets = [];
-        query = getParameterByName('q');
+        var tweets = [];
+        var query = getParameterByName('q');
+        var nextPageUrl;
 
         function attachTweet(value , prepend)
         {
@@ -61,18 +62,32 @@
             }
         }
 
-        function loadTweet()
+        function loadTweet(url)
         {
+            var fetchUrl;
+            if(!url)
+            {
+                fetchUrl = '/api/tweet'
+            }
+            else
+                fetchUrl = nextPageUrl
             $.ajax({
-                url : '/api/tweet',
+                url : fetchUrl,
                 method:'GET',
                 data : {
                     "q" : query
                 },
                 success : function(data){
-                    tweets = data
+                    tweets = data.results
                     console.log(data)
                     appendTweet()
+                    if(data.next)
+                        nextPageUrl = data.next
+                    else
+                    {
+                        nextPageUrl = null
+                        $('#loadmore').css('display' , 'none')
+                    }
                 },
                 error : function(data){
                     console.log("error")
@@ -136,6 +151,12 @@
                 console.log("Character count can't be more than 140")
             }
         })
+        
+        $('#loadmore').click(function(event){
+            event.preventDefault()
+            if(nextPageUrl)
+                loadTweet(nextPageUrl)
+        })
 
     })
     
@@ -162,7 +183,7 @@
             <div id="tweet-container">
 
             </div>
-
+            <a href='#' id='loadmore'>Load More Tweets</a>
         </div>
     </div>
 
