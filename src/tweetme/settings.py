@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'tweets',
     'accounts',
-    
+    'hashtag',
 ]
 
 MIDDLEWARE = [
