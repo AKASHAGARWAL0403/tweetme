@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^tweet/',include('tweets.urls'),name ="tweets"),
     url(r'^api/tweet/' , include('tweets.api.urls') , name="api-tweets"),
     url(r'^admin/', admin.site.urls),
+    url(r'^' , include('accounts.urls') , name="profile"),
 ]
 
 if settings.DEBUG:
