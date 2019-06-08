@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import post_save
 from django.urls import reverse
 # Create your models here.
 
@@ -49,3 +50,10 @@ class UserModel(models.Model):
 
     def get_absolute_url(self):
         return reverse("profile:user_profile" , kwargs={"username" : self.user.username})
+
+
+def post_save_user_reciever(sender , instance , created , *args , **kwargs):
+    if created:
+        user_profile = UserModel.objects.get_or_create(user = instance)
+
+post_save.connect(post_save_user_reciever , sender = settings.AUTH_USER_MODEL)
