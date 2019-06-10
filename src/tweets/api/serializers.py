@@ -29,6 +29,9 @@ class TweetModalSerializers(serializers.ModelSerializer):
     timesince = serializers.SerializerMethodField()
     date_display = serializers.SerializerMethodField()
     parent = ParentTweetModalSerializers(read_only = True)
+    like_count = serializers.SerializerMethodField()
+    user_liked = serializers.SerializerMethodField()
+
     class Meta:
         model = Tweet
         fields = [
@@ -38,9 +41,21 @@ class TweetModalSerializers(serializers.ModelSerializer):
             'timestamp',
             'date_display',
             'timesince',
-            'parent'
+            'parent',
+            'like_count',
+            'user_liked'
             ]
-    
+
+    def get_user_liked(self , obj):
+        cont = self.context.get('request')
+        user = cont.user
+        if user in obj.liked.all():
+            return True
+        return False
+
+    def get_like_count(self , obj):
+        return obj.liked.all().count()
+
     def get_date_display(self , obj):
         return obj.timestamp.strftime("%b %d, %I:%M %p")
 

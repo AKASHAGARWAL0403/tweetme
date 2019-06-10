@@ -61,6 +61,28 @@
         else
             tweetUrl = "/api/tweet"
 
+        $(document.body).on("click" , ".like_button" , function(e){
+            e.preventDefault()
+            this_ = $(this)
+            url = "/api/tweet/" + this_.attr('data-id') + "/like"
+            $.ajax({
+                url : url , 
+                method : 'GET' , 
+                success : function(data){
+                    if(data.liked){
+                        this_.text("Liked")
+                    }
+                    else{
+                        this_.text("Unliked")
+                    }
+                },
+                error : function(error){
+                    console.log("error")
+                    console.log(error)
+                }
+            })
+        })
+
         $(document.body).on("click" , ".retweet" , function(e){
             e.preventDefault()
             url = "api" + $(this).attr('href')
@@ -105,11 +127,17 @@
             var tweetContent = tweetValue.content;
             var tweetUser = tweetValue.user;
             var tweetFormattedHtml;
+            var verb;
+            if(tweetValue.user_liked){
+                verb = "Unlike"
+            }
+            else
+                verb = "Like"
             if (retweet && tweetValue.parent){
                 var mainTweet = tweetValue.parent
-                tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\"><span class='greyColor'>Retweet via " + tweetUser.username +" on " + dateDisplay + "</span><br/>"+ mainTweet.content + "<br/> via <a href='" + mainTweet.user.url + "'>" + mainTweet.user.username + "</a> | " + mainTweet.date_display + " | " + "<a href='/tweet/" + mainTweet.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a></div></div><hr/>"
+                tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\"><span class='greyColor'>Retweet via " + tweetUser.username +" on " + dateDisplay + "</span><br/>"+ mainTweet.content + "<br/> via <a href='" + mainTweet.user.url + "'>" + mainTweet.user.username + "</a> | " + mainTweet.date_display + " | " + "<a href='/tweet/" + mainTweet.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a>" + " | " + "<a href=# class='like_button' data-id='"+ tweetValue.id + "'>"+ verb + "(" + tweetValue.like_count + ")</a>" + "</div></div><hr/>"
             } else {
-                tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "<br/> via <a href='" + tweetUser.url + "'>" + tweetUser.username + "</a> | " + dateDisplay + " | " + "<a href='/tweet/" + tweetValue.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a></div></div><hr/>"
+                tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "<br/> via <a href='" + tweetUser.url + "'>" + tweetUser.username + "</a> | " + dateDisplay + " | " + "<a href='/tweet/" + tweetValue.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a>" + " | " + "<a href=# class='like_button' data-id='"+ tweetValue.id + "'>" + verb + "(" + tweetValue.like_count + ")</a>"  + "</div></div><hr/>"
             }
             if(prepend == true)
             {

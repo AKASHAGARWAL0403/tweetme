@@ -22,9 +22,19 @@ class TweetManager(models.Manager):
         obj.save()
         return obj
 
+    def is_liked(self , user , tweet_obj , *args , **kwargs):
+        if user in  tweet_obj.liked.all():
+            is_like = False
+            tweet_obj.liked.remove(user)
+        else:
+            is_like = True
+            tweet_obj.liked.add(user)
+        return is_like    
+
 class Tweet(models.Model):
     parent = models.ForeignKey("self" , on_delete = models.CASCADE , blank = True , null = True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL , on_delete = models.CASCADE)
+    liked = models.ManyToManyField(settings.AUTH_USER_MODEL , related_name="liked" , blank=True)
     content = models.CharField(max_length=140 , validators=[validate_content])
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
