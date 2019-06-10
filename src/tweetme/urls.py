@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^$', TweetListView.as_view() , name="home"),
     url(r'^tweet/',include('tweets.urls'),name ="tweets"),
     url(r'^api/tweet/' , include('tweets.api.urls') , name="api-tweets"),
+    url(r'^api/' , include('accounts.api.urls') , name="api-profile"),
     url(r'^admin/', admin.site.urls),
     url(r'^tags/(?P<hashtag>.*)/$', HashtagView.as_view(), name='hashtag'),
     url(r'^' , include('accounts.urls') , name="profile"),
