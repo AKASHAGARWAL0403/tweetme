@@ -60,7 +60,12 @@ class TweetDetailAPIView(generics.ListAPIView):
     def get_queryset(self , *args , **kwargs):
         tweet_id = self.kwargs.get("pk")
         qs = Tweet.objects.filter(pk=tweet_id)
-        return qs
+        if qs.exists() and qs.count() == 1:
+            parent = qs.first()
+            qs1 = parent.get_children()
+            qs = (qs | qs1).distinct().extra(select={"parent_id_null" : "parent_id IS NULL"})
+        #print(qs)
+        return qs.order_by('-parent_id_null' , '-timestamp')
 
 
 class TweetListAPIView(generics.ListAPIView):

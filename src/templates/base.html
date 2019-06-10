@@ -24,6 +24,9 @@
         .greyColor{
             color: #ccc;
         }
+        .media-focus{
+            background-color: aqua
+        }
     </style>
   </head>
   <body>
@@ -144,6 +147,16 @@
             var container;
             var parValue = tweetValue;
             var isReply = tweetValue.is_reply
+            var replyId = tweetValue.id
+            var openingDiv = "<div class=\"media\">"
+            if(tweetValue.parent)
+                replyId = tweetValue.parent.id
+
+            if(tweetValue.id == fetchSingle)
+            {
+                openingDiv = "<div class=\"media media-focus\">"
+            }
+    
             if(tweetValue.parent && !isReply)
             {
                 preContent = "<span class='greyColor'>Retweet via " + tweetValue.user.username +" on " + tweetValue.date_display + "</span><br/>"
@@ -159,14 +172,14 @@
                 verb = 'Unlike'
             }
 
-            tweetContent = parValue.content + "<br/> via <a href='" + parValue.user.url + "'>" + parValue.user.username + "</a> | " + parValue.date_display + " | " + "<a href='/tweet/" + tweetValue.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a>" + " | " + "<a href=# class='like_button' data-id='"+ parValue.id + "'>"+ verb + "(" + parValue.like_count + ")</a>" + " | " + "<a class='tweet-reply' href='#' data-user='" + tweetValue.user.username + "' data-id='"+tweetValue.id+"'>Reply</a>" 
+            tweetContent = parValue.content + "<br/> via <a href='" + parValue.user.url + "'>" + parValue.user.username + "</a> | " + parValue.date_display + " | " + "<a href='/tweet/" + tweetValue.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a>" + " | " + "<a href=# class='like_button' data-id='"+ parValue.id + "'>"+ verb + "(" + parValue.like_count + ")</a>" + " | " + "<a class='tweet-reply' href='#' data-user='" + parValue.user.username + "' data-id='"+replyId+"'>Reply</a>" 
             
             
             
             if(preContent)
-                container = "<div class=\"media\"><div class=\"media-body\">" + preContent + tweetContent + "</div></div><hr/>"
+                container =  openingDiv + "<div class=\"media-body\">" + preContent + tweetContent + "</div></div><hr/>"
             else
-                container = "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "</div></div><hr/>"
+                container =  openingDiv + "<div class=\"media-body\">" + tweetContent + "</div></div><hr/>"
             return container
         }
 

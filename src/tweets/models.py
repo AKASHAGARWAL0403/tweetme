@@ -54,3 +54,15 @@ class Tweet(models.Model):
 
     def get_absolute_url(self):
         return reverse("tweets:detail_view" , kwargs={"pk":self.pk})
+
+    def get_parent(self):
+        parent = self
+        if self.parent:
+            parent = self.parent
+        return parent
+
+    def get_children(self):
+        parent = self.get_parent()
+        qs1 = Tweet.objects.filter(parent = parent)
+        qs2 = Tweet.objects.filter(pk=parent.pk)
+        return (qs1 | qs2)
