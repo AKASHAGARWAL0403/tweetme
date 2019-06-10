@@ -40,21 +40,25 @@
             })
         }
 
-        function attachTweet(value , prepend)
+        function attachTweet(tweetValue , prepend , retweet)
         {
-            var is_retweet = value.is_retweet;
-            var tweetId = value.id;
-            var tweetContent = value.content;
-            var tweetUser = value.user.username;
-            var dateDisplay = value.date_display;
-            var attachHTMLContent  = "<div class=\"media\">" + is_retweet + "<div class=\"media-body\">" + tweetContent + "<br/> via " + "<a href='"+ value.user.url + "'>"  + tweetUser + " </a> | "  + dateDisplay + " | " + "<a href='/tweet/"+ tweetId + "'>View</a>"  + "</div></div><hr/>"
+            var dateDisplay = tweetValue.date_display;
+            var tweetContent = tweetValue.content;
+            var tweetUser = tweetValue.user;
+            var tweetFormattedHtml;
+            if (retweet && tweetValue.parent){
+                var mainTweet = tweetValue.parent
+                tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\"><span class='greyColor'>Retweet via " + tweetUser.username +" on " + dateDisplay + "</span><br/>"+ mainTweet.content + "<br/> via <a href='" + mainTweet.user.url + "'>" + mainTweet.user.username + "</a> | " + mainTweet.date_display + " | " + "<a href='/tweet/" + mainTweet.id + "'>View</a>" + " | " + "<a href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a></div></div><hr/>"
+            } else {
+                tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "<br/> via <a href='" + tweetUser.url + "'>" + tweetUser.username + "</a> | " + dateDisplay + " | " + "<a href='/tweet/" + tweetValue.id + "'>View</a>" + " | " + "<a href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a></div></div><hr/>"
+            }
             if(prepend == true)
             {
-                $('#tweet-container').prepend(attachHTMLContent)
+                $('#tweet-container').prepend(tweetFormattedHtml)
             }
             else
             {
-                $("#tweet-container").append(attachHTMLContent)
+                $("#tweet-container").append(tweetFormattedHtml)
             }
         }
 
@@ -68,7 +72,10 @@
             {
                 $.each(tweets , function(key,value){
                     var tweetKey = key;
-                    attachTweet(value);
+                    if(value.parent)
+                        attachTweet(value , false , true );
+                    else
+                        attachTweet(value , false , false);
                 })
             }
         }
@@ -149,7 +156,10 @@
                     data : formData , 
                     success : function(data){
                         console.log(data)
-                        attachTweet(data , true)
+                        if(data.parent)
+                            attachTweet(data , true , true)
+                        else
+                            attachTweet(data , true , false)
                         updateHashLinks()
                         this_.find("input[type=text] , textarea").val("")
                     },

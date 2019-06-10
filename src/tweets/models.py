@@ -8,6 +8,12 @@ class TweetManager(models.Manager):
     def retweet(self , user , parent , *args , **kwargs):
         if parent.parent:
             parent = parent.parent
+        
+        qs = self.get_queryset().filter(user=user , parent = parent)
+        
+        if qs.exists():
+            return None
+
         obj = self.model(
             parent = parent , 
             user = user , 
