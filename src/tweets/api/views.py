@@ -4,6 +4,25 @@ from tweets.models import Tweet
 from django.db.models import Q
 from rest_framework import permissions
 from .pagination import StandardResultPagination 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import TweetModalSerializers
+
+class RetweetView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self , request , pk , *args , **kwargs):
+        par_obj = Tweet.objects.filter(pk = pk)
+        message = "Not allowed"
+        if par_obj.exists() and par_obj.count() == 1:
+            #if request.user.is_authenticated:
+            retweet_obj = Tweet.objects.retweet(request.user , par_obj.first())
+            if retweet_obj is not None:
+                ser_data = TweetModalSerializers(retweet_obj).data
+                return Response(ser_data)
+            message = "User cant retweet it more than once"
+
+        return Response({"message" : message} , status=400)
 
 class TweetCreateAPIView(generics.CreateAPIView):
     serializer_class = TweetModalSerializers
