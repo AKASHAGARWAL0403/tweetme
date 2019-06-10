@@ -28,6 +28,7 @@
   </head>
   <body>
     {% include "navbar.html" %}
+    {% include "reply-modal.html" %}
     <div class='container'>
       
       {% block content %}
@@ -83,6 +84,20 @@
             })
         })
 
+        $(document.body).on("click" , ".tweet-reply" , function(e){
+            e.preventDefault()
+            this_ = $(this)
+            user_id = this_.attr('data-id')
+            username = this_.attr('data-user')
+            $("#replyModal").modal({})
+            $("#replyModal textarea").val("@" + username + " ")
+            $("#replyModal textarea").after("<input type=text hidden value='"+user_id+"' name=parent_id />")
+            $("#replyModal textarea").after("<input type=text hidden value='"+true+"' name=is_reply />")
+            $("#replyModal").on("shown.bs.modal", function(){
+                $('textarea').focus()
+            })
+        })
+
         $(document.body).on("click" , ".retweet" , function(e){
             e.preventDefault()
             url = "api" + $(this).attr('href')
@@ -90,6 +105,7 @@
                 url : url , 
                 method : 'GET' , 
                 success : function(data){
+                    console.log(data)
                     attachTweet(data , true , true)
                     updateHashLinks()
                 },
@@ -121,32 +137,71 @@
             })
         }
         
+        function tweetFormat(tweetValue){
+
+            var preContent;
+            var tweetContent;
+            var container;
+            var parValue = tweetValue;
+            var isReply = tweetValue.is_reply
+            if(tweetValue.parent && !isReply)
+            {
+                preContent = "<span class='greyColor'>Retweet via " + tweetValue.user.username +" on " + tweetValue.date_display + "</span><br/>"
+                parValue = tweetValue.parent
+            }
+            else if(tweetValue.parent && isReply)
+            {
+                preContent = "<span class='greyColor'>Reply to @" + tweetValue.parent.user.username +  "</span><br/>"
+            }
+
+            var verb = 'Like'
+            if (parValue.did_like){
+                verb = 'Unlike'
+            }
+
+            tweetContent = parValue.content + "<br/> via <a href='" + parValue.user.url + "'>" + parValue.user.username + "</a> | " + parValue.date_display + " | " + "<a href='/tweet/" + tweetValue.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a>" + " | " + "<a href=# class='like_button' data-id='"+ parValue.id + "'>"+ verb + "(" + parValue.like_count + ")</a>" + " | " + "<a class='tweet-reply' href='#' data-user='" + tweetValue.user.username + "' data-id='"+tweetValue.id+"'>Reply</a>" 
+            
+            
+            
+            if(preContent)
+                container = "<div class=\"media\"><div class=\"media-body\">" + preContent + tweetContent + "</div></div><hr/>"
+            else
+                container = "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "</div></div><hr/>"
+            return container
+        }
+
         function attachTweet(tweetValue , prepend , retweet)
         {
-            var dateDisplay = tweetValue.date_display;
-            var tweetContent = tweetValue.content;
-            var tweetUser = tweetValue.user;
-            var tweetFormattedHtml;
-            var verb;
-            if(tweetValue.user_liked){
-                verb = "Unlike"
-            }
-            else
-                verb = "Like"
-            if (retweet && tweetValue.parent){
-                var mainTweet = tweetValue.parent
-                tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\"><span class='greyColor'>Retweet via " + tweetUser.username +" on " + dateDisplay + "</span><br/>"+ mainTweet.content + "<br/> via <a href='" + mainTweet.user.url + "'>" + mainTweet.user.username + "</a> | " + mainTweet.date_display + " | " + "<a href='/tweet/" + mainTweet.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a>" + " | " + "<a href=# class='like_button' data-id='"+ tweetValue.id + "'>"+ verb + "(" + tweetValue.like_count + ")</a>" + "</div></div><hr/>"
-            } else {
-                tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "<br/> via <a href='" + tweetUser.url + "'>" + tweetUser.username + "</a> | " + dateDisplay + " | " + "<a href='/tweet/" + tweetValue.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a>" + " | " + "<a href=# class='like_button' data-id='"+ tweetValue.id + "'>" + verb + "(" + tweetValue.like_count + ")</a>"  + "</div></div><hr/>"
-            }
-            if(prepend == true)
-            {
+            // var dateDisplay = tweetValue.date_display;
+            // var tweetContent = tweetValue.content;
+            // var tweetUser = tweetValue.user;
+            // var tweetFormattedHtml;
+            // var verb;
+            // if(tweetValue.user_liked){
+            //     verb = "Unlike"
+            // }
+            // else
+            //     verb = "Like"
+            // if (retweet && tweetValue.parent){
+            //     var mainTweet = tweetValue.parent
+            //     tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\"><span class='greyColor'>Retweet via " + tweetUser.username +" on " + dateDisplay + "</span><br/>"+ mainTweet.content + "<br/> via <a href='" + mainTweet.user.url + "'>" + mainTweet.user.username + "</a> | " + mainTweet.date_display + " | " + "<a href='/tweet/" + mainTweet.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a>" + " | " + "<a href=# class='like_button' data-id='"+ tweetValue.id + "'>"+ verb + "(" + tweetValue.like_count + ")</a>" + "</div></div><hr/>"
+            // } else {
+            //     tweetFormattedHtml = "<div class=\"media\"><div class=\"media-body\">" + tweetContent + "<br/> via <a href='" + tweetUser.url + "'>" + tweetUser.username + "</a> | " + dateDisplay + " | " + "<a href='/tweet/" + tweetValue.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a>" + " | " + "<a href=# class='like_button' data-id='"+ tweetValue.id + "'>" + verb + "(" + tweetValue.like_count + ")</a>"  + "</div></div><hr/>"
+            // }
+            // if(prepend == true)
+            // {
+            //     tweetContainer.prepend(tweetFormattedHtml)
+            // }
+            // else
+            // {
+            //     tweetContainer.append(tweetFormattedHtml)
+            // }
+
+            var tweetFormattedHtml = tweetFormat(tweetValue)
+            if(prepend)
                 tweetContainer.prepend(tweetFormattedHtml)
-            }
             else
-            {
                 tweetContainer.append(tweetFormattedHtml)
-            }
         }
 
         function appendTweet()
@@ -206,12 +261,12 @@
         var countAllowed = 140;
         var currCount = 0;
 
-        $('#tweet-form').append("<span id=\"tweetCharsLeft\">" + countAllowed + "<span/>")
+        $('.tweet-form').append("<span class=\"tweetCharsLeft\">" + countAllowed + "<span/>")
 
-        $('#tweet-form textarea').keydown(function(event){
+        $('.tweet-form textarea').keydown(function(event){
             var tweetVal = $(this).val()
             currCount = countAllowed - tweetVal.length
-            var spanChar = $('#tweetCharsLeft')
+            var spanChar = $(this).parent().parent().parent().find('span.tweetCharsLeft')
             spanChar.text(currCount)
             if(currCount > 0)
             {
@@ -230,7 +285,7 @@
             }
         })
 
-        $("#tweet-form").submit(function(e){
+        $(".tweet-form").submit(function(e){
             e.preventDefault()
             var this_ = $(this);
             var formData = this_.serialize()
@@ -238,17 +293,14 @@
             if(currCount > 0)
             {
                 $.ajax({
-                    url : tweetUrl+"/create/",
+                    url : "/api/tweet/create/",
                     method:'POST',
                     data : formData , 
                     success : function(data){
-                        console.log(data)
-                        if(data.parent)
-                            attachTweet(data , true , true)
-                        else
-                            attachTweet(data , true , false)
+                        attachTweet(data , true)
                         updateHashLinks()
                         this_.find("input[type=text] , textarea").val("")
+                        $("#replyModal").modal("hide")
                     },
                     error : function(data){
                         console.log("error")

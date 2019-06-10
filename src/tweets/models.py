@@ -5,19 +5,20 @@ from django.urls import reverse
 # Create your models here.
 
 class TweetManager(models.Manager):
-    def retweet(self , user , parent , *args , **kwargs):
-        if parent.parent:
-            parent = parent.parent
-        
-        qs = self.get_queryset().filter(user=user , parent = parent)
+    def retweet(self , user , parent_obj , *args , **kwargs):
+        if parent_obj.parent:
+            og_parent = parent_obj.parent
+        else:
+            og_parent = parent_obj
+        qs = self.get_queryset().filter(user=user , parent = og_parent)
         
         if qs.exists():
             return None
 
         obj = self.model(
-            parent = parent , 
+            parent = og_parent , 
             user = user , 
-            content = parent.content
+            content = og_parent.content
         )
         obj.save()
         return obj
@@ -35,6 +36,7 @@ class Tweet(models.Model):
     parent = models.ForeignKey("self" , on_delete = models.CASCADE , blank = True , null = True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL , on_delete = models.CASCADE)
     liked = models.ManyToManyField(settings.AUTH_USER_MODEL , related_name="liked" , blank=True)
+    is_reply = models.BooleanField(verbose_name='Is a reply?', default=False)
     content = models.CharField(max_length=140 , validators=[validate_content])
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
