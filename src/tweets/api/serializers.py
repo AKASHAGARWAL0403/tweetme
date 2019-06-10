@@ -42,7 +42,7 @@ class ParentTweetModalSerializers(serializers.ModelSerializer):
         return timesince(obj.timestamp) + " ago"
 
 class TweetModalSerializers(serializers.ModelSerializer):
-    parent_id = serializers.CharField(write_only=True , required=True)
+    parent_id = serializers.CharField(write_only=True , required=False)
     user = UserModalSerializers(read_only = True)
     timesince = serializers.SerializerMethodField()
     date_display = serializers.SerializerMethodField()

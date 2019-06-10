@@ -42,7 +42,7 @@
       <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
 
     <script>
-    function CompleteTweets(containerId)
+    function CompleteTweets(containerId , fetchSingle)
     {
         
         var tweets = [];
@@ -100,7 +100,7 @@
 
         $(document.body).on("click" , ".retweet" , function(e){
             e.preventDefault()
-            url = "api" + $(this).attr('href')
+            url = "/api" + $(this).attr('href')
             $.ajax({
                 url : url , 
                 method : 'GET' , 
@@ -256,7 +256,32 @@
                 } 
             })
         }
-        loadTweet();
+        
+        
+        function loadSingleTweet(singleId)
+        {
+            var fetchUrl = "/api/tweet/" + singleId + "/"
+            $.ajax({
+                url : fetchUrl,
+                method:'GET',
+                success : function(data){
+                    tweets = data.results
+                    //console.log(data)
+                    appendTweet()
+                    updateHashLinks()
+                },
+                error : function(data){
+                    console.log("error")
+                    console.log(data)
+                } 
+            })
+        }
+        
+
+        if(fetchSingle)
+            loadSingleTweet(fetchSingle)
+        else
+            loadTweet();
 
         var countAllowed = 140;
         var currCount = 0;
