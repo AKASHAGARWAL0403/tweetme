@@ -23,6 +23,7 @@ from tweets.views import TweetListView
 from hashtag.views import HashtagView
 from hashtag.api.views import HashListAPIView 
 from tweets.api.views import SearchListAPIView
+from accounts.views import UserRegistrationView
 
 urlpatterns = [
     url(r'^$', TweetListView.as_view() , name="home"),
@@ -32,8 +33,10 @@ urlpatterns = [
     url(r'^api/tag/(?P<hashtag>.*)/$' , HashListAPIView.as_view() , name="api-hashtag"),
     url(r'^api/search/' , SearchListAPIView.as_view() , name="api-search"),
     url(r'^api/' , include('accounts.api.urls') , name="api-profile"),
+    url(r'^register/' , UserRegistrationView.as_view() , name="register"),
     url(r'^admin/', admin.site.urls),
     url(r'^tags/(?P<hashtag>.*)/$', HashtagView.as_view(), name='hashtag'),
+    url(r'^', include('django.contrib.auth.urls')),
     url(r'^' , include('accounts.urls') , name="profile"),
 ]
 

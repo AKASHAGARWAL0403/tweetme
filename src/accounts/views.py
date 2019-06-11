@@ -1,11 +1,30 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.views.generic import DetailView
+from django.views.generic.edit import FormView
 from django.shortcuts import get_object_or_404 , redirect
 from django.views import View
 from .models import UserModel
+from .forms import RegistrationForm
 
 User = get_user_model()
+
+class UserRegistrationView(FormView):
+    template_name = 'account/user_registration_form.html'
+    form_class = RegistrationForm
+    success_url = '/login'
+
+    def form_valid(self , form):
+        username = form.cleaned_data.get('username')
+        email = form.cleaned_data.get('email')
+        password = form.cleaned_data.get('password')
+        obj = User.objects.create(
+            username = username,
+            email = email
+        )
+        obj.set_password(password)
+        obj.save()
+        return super().form_valid(form)
 
 class UserProfileView(DetailView):
     queryset = User.objects.all()
