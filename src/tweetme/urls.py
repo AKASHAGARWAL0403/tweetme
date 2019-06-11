@@ -18,14 +18,17 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import url,include
-from .views import home_view
+from .views import home_view , SearchView
 from tweets.views import TweetListView
 from hashtag.views import HashtagView
+from tweets.api.views import SearchListAPIView
 
 urlpatterns = [
     url(r'^$', TweetListView.as_view() , name="home"),
+    url(r'^search/$', SearchView.as_view() , name="search"),
     url(r'^tweet/',include('tweets.urls'),name ="tweets"),
     url(r'^api/tweet/' , include('tweets.api.urls') , name="api-tweets"),
+    url(r'^api/search/' , SearchListAPIView.as_view() , name="api-search"),
     url(r'^api/' , include('accounts.api.urls') , name="api-profile"),
     url(r'^admin/', admin.site.urls),
     url(r'^tags/(?P<hashtag>.*)/$', HashtagView.as_view(), name='hashtag'),
