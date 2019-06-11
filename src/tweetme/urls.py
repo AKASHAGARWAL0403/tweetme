@@ -21,6 +21,7 @@ from django.conf.urls import url,include
 from .views import home_view , SearchView
 from tweets.views import TweetListView
 from hashtag.views import HashtagView
+from hashtag.api.views import HashListAPIView 
 from tweets.api.views import SearchListAPIView
 
 urlpatterns = [
@@ -28,6 +29,7 @@ urlpatterns = [
     url(r'^search/$', SearchView.as_view() , name="search"),
     url(r'^tweet/',include('tweets.urls'),name ="tweets"),
     url(r'^api/tweet/' , include('tweets.api.urls') , name="api-tweets"),
+    url(r'^api/tag/(?P<hashtag>.*)/$' , HashListAPIView.as_view() , name="api-hashtag"),
     url(r'^api/search/' , SearchListAPIView.as_view() , name="api-search"),
     url(r'^api/' , include('accounts.api.urls') , name="api-profile"),
     url(r'^admin/', admin.site.urls),
