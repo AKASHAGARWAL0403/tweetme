@@ -19,6 +19,7 @@ class UserProfileView(DetailView):
         toggle_user = get_object_or_404(User , username__iexact=self.kwargs.get("username"))
         is_following = UserModel.objects.is_following(self.request.user , toggle_user)
         context['is_following'] = is_following
+        #context['recommended'] = UserModel.objects.recommended(self.request.user , 10)
         return context  
 
 class UserFollowView(View):

@@ -32,6 +32,12 @@ class UserProfileManager(models.Manager):
         else:
             return False
 
+    def recommended(self , user , limit_to):
+        profile = user.profile
+        following = profile.get_following()
+        qs = self.get_queryset().exclude(user__in=following).exclude(id=profile.id).order_by("?")[:limit_to]
+        return qs
+        
 class UserModel(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL , related_name="profile" , on_delete=models.CASCADE)
     following = models.ManyToManyField(settings.AUTH_USER_MODEL , related_name="followed_by" , blank=True)

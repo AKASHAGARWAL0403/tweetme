@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load recommended %}
 {% block script %}
 
 <script>
@@ -15,8 +15,11 @@
 {% block content %}
    
     <div class='row'>
-        <div class='col-sm-3 col-xs-12' style='background-color:red;'>
+        <div class='col-sm-3 col-xs-12'>
         <h1>{{ request.user }}</h1>
+        <hr/>
+        <h2>Recommmended Users</h2>
+        {% recommended request.user %}
         </div>
         <div class='col-sm-9 '>
              {% if not request.GET.q %}
