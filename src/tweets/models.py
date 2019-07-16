@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from .validators import validate_content
 from django.urls import reverse
 # Create your models here.
 
@@ -37,7 +36,7 @@ class Tweet(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL , on_delete = models.CASCADE)
     liked = models.ManyToManyField(settings.AUTH_USER_MODEL , related_name="liked" , blank=True)
     is_reply = models.BooleanField(verbose_name='Is a reply?', default=False)
-    content = models.CharField(max_length=140 , validators=[validate_content])
+    content = models.CharField(max_length=140)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

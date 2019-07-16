@@ -8,6 +8,7 @@ from .mixins import UserLoginCheckMixin , TweetUpdateCheckMixin
 from django.db.models import Q
 from django.urls import reverse
 from django.views import View
+from accounts.models import UserModel
 # Create your views here.
 
 
@@ -51,7 +52,7 @@ class TweetDetailView(DetailView):
         print(obj)
         return obj
 
-class TweetListView(ListView):
+class TweetListView(LoginRequiredMixin , ListView):
     queryset = Tweet.objects.all()
     template_name  = "tweet/list_view.html"
     context_object_name = "object_list"
@@ -70,4 +71,5 @@ class TweetListView(ListView):
         context = super().get_context_data(*args,**kwargs)
         context['create_form'] = TweetForm()
         context['create_url'] = reverse("tweets:create_view")
+        context['recommended_users'] = UserModel.objects.recommended(self.request.user , 10)
         return context

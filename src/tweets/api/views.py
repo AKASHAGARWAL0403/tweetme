@@ -7,6 +7,7 @@ from .pagination import StandardResultPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import TweetModalSerializers
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class LikeToggleAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]

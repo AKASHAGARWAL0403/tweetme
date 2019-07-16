@@ -171,7 +171,6 @@
             if (parValue.did_like){
                 verb = 'Unlike'
             }
-
             tweetContent = parValue.content + "<br/> via <a href='" + parValue.user.url + "'>" + parValue.user.username + "</a> | " + parValue.date_display + " | " + "<a href='/tweet/" + tweetValue.id + "'>View</a>" + " | " + "<a class='retweet' href='/tweet/" + tweetValue.id + "/retweet'> Retweet</a>" + " | " + "<a href=# class='like_button' data-id='"+ parValue.id + "'>"+ verb + "(" + parValue.like_count + ")</a>" + " | " + "<a class='tweet-reply' href='#' data-user='" + parValue.user.username + "' data-id='"+replyId+"'>Reply</a>" 
             
             
@@ -274,12 +273,13 @@
         function loadSingleTweet(singleId)
         {
             var fetchUrl = "/api/tweet/" + singleId + "/"
+            console.log("fetch url is" , fetchUrl)
             $.ajax({
                 url : fetchUrl,
                 method:'GET',
                 success : function(data){
                     tweets = data.results
-                    //console.log(data)
+                    console.log("fetch data is" , data)
                     appendTweet()
                     updateHashLinks()
                 },
@@ -327,7 +327,6 @@
             e.preventDefault()
             var this_ = $(this);
             var formData = this_.serialize()
-            console.log(formData)
             if(currCount > 0)
             {
                 $.ajax({
@@ -335,6 +334,7 @@
                     method:'POST',
                     data : formData , 
                     success : function(data){
+                        console.log(data);
                         attachTweet(data , true)
                         updateHashLinks()
                         this_.find("input[type=text] , textarea").val("")

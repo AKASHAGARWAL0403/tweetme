@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load recommended %}
 {% block script %}
 
 <script>
@@ -19,7 +18,11 @@
         <h1>{{ request.user }}</h1>
         <hr/>
         <h2>Recommmended Users</h2>
-        {% recommended request.user %}
+        {% for profile in recommended_users %}
+            <a href='/{{ profile.user.username }}'>{{ profile.user.username }}</a><br/>
+            {% empty %}
+            <h4>No recommended user</h4>
+        {% endfor %}
         </div>
         <div class='col-sm-9 '>
              {% if not request.GET.q %}
